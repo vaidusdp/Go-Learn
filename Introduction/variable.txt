@@ -1,0 +1,28 @@
+package main
+
+import "fmt"
+
+// middleName := "Cane"
+var middleName string = "Cane"
+
+func main() {
+	var age int
+
+	var name1 string = "name1"
+	var name2 = "name2"
+
+	name3 := "name3"
+
+	// Default Values
+	// Numeric = 0, Boolean = false, String = "", Rest = nil
+
+	// ------- Scope
+
+	fmt.Println(middleName)
+	printName()
+}
+
+func printName() {
+	firstName := "Vaidus"
+	fmt.Println(firstName)
+}
