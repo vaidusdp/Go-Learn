@@ -1,0 +1,40 @@
+package main
+
+import "fmt"
+
+func main() {
+	var a, b int = 10, 3
+	var res int
+
+	res = a + b
+	fmt.Println(res)
+
+	res = a - b
+	fmt.Println(res) 
+
+	res = a / b
+	fmt.Println(res)
+
+	res = a * b
+	fmt.Println(res)
+
+	res = a % b
+	fmt.Println(res)
+
+	const p float64 = 22.0 / 7 // Right to Left
+
+	// Overflow -> Max val 
+	// Underflow -> Min val
+	fmt.Println(p);
+
+
+	// SignedInt
+	var maxInt int64 = 9223372036854775807
+	fmt.Println(maxInt)
+	fmt.Println(maxInt + 1)
+
+	// Unsigned Int
+	var umaxInt uint64 = 18446744073709551615
+	fmt.Println(umaxInt)
+	fmt.Println(umaxInt + 1)
+}
