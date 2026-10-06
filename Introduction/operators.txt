@@ -1,0 +1,18 @@
+Logical Operators:
+    !
+    &&
+    ||
+
+Bitwise Operators:
+    &
+    |
+    ^
+    &^ (bit clear, AND NOT)
+    <<
+    >>
+
+Comparison
+    ==
+    !=
+    <=
+    >=
