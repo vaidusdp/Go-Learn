@@ -3,6 +3,8 @@ package main
 import "fmt"
 
 // middleName := "Cane"
+// Can declare local variable like this
+
 var middleName string = "Cane"
 
 func main() {

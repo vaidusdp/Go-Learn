@@ -1,0 +1,50 @@
+package main
+
+import (
+	"fmt"
+)
+
+func main() {
+	// var nums []int
+
+	// var nums1 = []int{1, 2, 3}
+	// nums2 := []int{9, 8, 7}
+
+	// // len 5
+	// slice := make([]int, 5)
+
+	a := [5]int{1, 2, 3, 4, 5}
+	// s1 := a[1:4]
+
+	// s1 = append(s1, 5, 6)
+	// fmt.Println(s1)
+
+	// cs1 := make([]int, len(s1));
+	// copy(cs1, s1);
+	// fmt.Println(cs1)
+
+	// // var nilSlice []int 
+
+	// for i, v := range s1 {
+	// 	fmt.Println(i, ":", v);
+	// }
+
+	// if slices.Equal(s1, cs1){
+	// 	fmt.Println("Whi h!")
+	// }
+
+	twoD := make([][]int, 3)
+	for i := 0; i<3; i++ {
+		innerLen := i + 1
+		twoD[i] = make([]int, innerLen)
+
+		for j:=0; j<innerLen; j++ {
+			twoD[i][j] = i+j
+		}
+	}
+	fmt.Println(twoD)
+
+	//SLICE[LOW:HIGH]
+	fmt.Println(cap(a))
+	fmt.Println(len(twoD))
+}
