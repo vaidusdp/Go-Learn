@@ -1,0 +1,28 @@
+package main
+
+import "fmt"
+
+func main() {
+
+	// func name(params list) returnType {
+	// 	code
+	// }
+
+	// Uppercase -> Public
+	// Lowercase -> Private
+
+	sum := add(3, 5)
+	fmt.Println(sum)
+
+	greet := func() {
+				fmt.Println("Anonymus")
+			}
+
+	greet()
+		
+	}
+
+
+func add(a, b int) int {
+	return a + b
+}
