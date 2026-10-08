@@ -1,0 +1,28 @@
+package main
+
+import "fmt"
+
+func main() {
+	// Terminatres Program
+	//panic(interface {})
+
+	process(5)
+	process(-5)
+
+}
+
+func process(input int) {
+
+
+	defer fmt.Println("Defer 1")
+	defer fmt.Println("Defer 2")
+
+	// Once all defer function are executed all the program terminates with panic
+	if input < 0 {
+		fmt.Println("B4 Panic")
+		panic("Less than 0")
+		// Anything after panic is unreachable
+	}
+
+	fmt.Println("Great!")
+}

@@ -1,0 +1,13 @@
+package main
+
+import (
+	"fmt"
+	"os"
+)
+
+func main() {
+	defer fmt.Println("Defer")
+	fmt.Println("Starting")
+	os.Exit(1)
+	fmt.Println("End")
+}

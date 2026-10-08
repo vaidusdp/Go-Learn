@@ -1,0 +1,18 @@
+package main
+
+import "fmt"
+
+func main() {
+	process(10)
+}
+
+func process(i int) {
+	defer fmt.Println("Defferd i value:", i)
+	defer fmt.Println("1st Defer Gets Executed") //Last
+	defer fmt.Println("2nd Defer Gets Executed") //First
+	//Evaluated in the beggining only
+	//LIFO
+	i++;
+	fmt.Println("Normal Execution")
+	fmt.Println(i)
+}
