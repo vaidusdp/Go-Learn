@@ -1,0 +1,39 @@
+package main
+
+import (
+	"errors"
+	"fmt"
+)
+
+func main() {
+
+	// func name(param1 type1, param2 type2) (returnType1, returnType2) {
+	// code
+
+	// return r1, r2
+	// }
+
+	q, r := divide(6, 4)
+	fmt.Println(q, r)
+
+	c, e := compare(5, 5)
+
+	fmt.Printf("Comparison: %v\nError: %v\n", c, e)
+}
+
+func divide(a int, b int) (q int, r int) {
+	q = a / b
+	r = a % b
+
+	return
+}
+
+func compare(a, b int) (string, error){
+	if a > b {
+		return "a > b", nil
+	} else if b > a {
+		return "b > a", nil
+	} else {
+		return "", errors.New("Unable to compare which is greater")
+	}
+}

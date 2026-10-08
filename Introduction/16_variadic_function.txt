@@ -1,0 +1,26 @@
+package main
+
+import "fmt"
+
+func main() {
+	// func name(p1 t1, p2 t2, p3 ...t3){
+	// 	//code
+	// }
+
+	x := add(1, 2, 3, 4, 5, 6, 7, 8, 9)
+	fmt.Println(x)
+
+	numbers := []int {1, 2, 3, 4, 5, 6}
+
+	y := add(numbers...)
+	fmt.Println(y)
+}
+
+func add(nums ...int) int {
+	total := 0
+
+	for _, v := range nums {
+		total += v
+	}
+	return total
+}
