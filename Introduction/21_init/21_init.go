@@ -15,5 +15,7 @@ func init() {
 }
 
 func main() {
+	// First init runs
+	// We can keep db connection inside init function as it initialises and runs b4 main function start
 	fmt.Println("Inside Main")
 }

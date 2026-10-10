@@ -1,11 +1,12 @@
 package main
 
-const pi = 3.14
+const PI = 3.14
 const G = 9.81
 
 func main(){
 	const days int = 7
 
+	// Defining multiple constants
 	const (
 		monday = 1
 		tuesday int = 2

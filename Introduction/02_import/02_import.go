@@ -1,6 +1,6 @@
 package main
 
-// Multiple Import
+// Multiple Import is done by brackets and can be named too
 import (
 	pr "fmt"
 	foo "net/http"

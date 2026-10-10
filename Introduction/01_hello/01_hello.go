@@ -2,7 +2,6 @@ package main
 
 // Format
 import "fmt"
-
 // Standart Library -> Used only what can be imported so the prog. can be optimised
 
 // Every go program must have main function as this is the entry point

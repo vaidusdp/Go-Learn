@@ -8,6 +8,7 @@ func main(){
 }
 
 func process() {
+	// Used to capture panic and run code smoothly
 	defer func() {
 		if r := recover(); r!=nil {
 			fmt.Println("Recovered:", r)

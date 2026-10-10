@@ -2,36 +2,37 @@ package main
 
 import (
 	"fmt"
+	"slices"
 )
 
 func main() {
-	// var nums []int
+	// 1. var nums []int
 
-	// var nums1 = []int{1, 2, 3}
-	// nums2 := []int{9, 8, 7}
+	// 2. var nums1 = []int{1, 2, 3}
+	// 3. nums2 := []int{9, 8, 7}
 
 	// // len 5
 	// slice := make([]int, 5)
 
 	a := [5]int{1, 2, 3, 4, 5}
-	// s1 := a[1:4]
+	s1 := a[1:4]
 
-	// s1 = append(s1, 5, 6)
-	// fmt.Println(s1)
+	s1 = append(s1, 5, 6)
+	fmt.Println(s1)
 
-	// cs1 := make([]int, len(s1));
-	// copy(cs1, s1);
-	// fmt.Println(cs1)
+	cs1 := make([]int, len(s1));
+	copy(cs1, s1);
+	fmt.Println(cs1)
 
-	// // var nilSlice []int 
+	// var nilSlice []int 
 
-	// for i, v := range s1 {
-	// 	fmt.Println(i, ":", v);
-	// }
+	for i, v := range s1 {
+		fmt.Println(i, ":", v);
+	}
 
-	// if slices.Equal(s1, cs1){
-	// 	fmt.Println("Whi h!")
-	// }
+	if slices.Equal(s1, cs1){
+		fmt.Println("Whi h!")
+	}
 
 	twoD := make([][]int, 3)
 	for i := 0; i<3; i++ {

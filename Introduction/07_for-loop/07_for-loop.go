@@ -17,9 +17,11 @@ func main() {
 	}
 
 	numbers := []int{1, 2, 3, 4, 5, 6}
+	// %d for numeric value
+	// %v for genral any datatype value
+	// %t for datatype
 	for index, value := range numbers {
 		fmt.Printf("Index: %d, Value: %v\n", index, value)
-		// %d and %v are similar
 	}
 
 	rows := 5

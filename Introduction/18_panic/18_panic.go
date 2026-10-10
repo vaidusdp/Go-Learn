@@ -12,8 +12,6 @@ func main() {
 }
 
 func process(input int) {
-
-
 	defer fmt.Println("Defer 1")
 	defer fmt.Println("Defer 2")
 

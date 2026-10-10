@@ -3,6 +3,17 @@ package main
 import "fmt"
 
 func main() {
+
+	// 1. var arr [5]int
+	// 2. fruits := [4] string{"A", "B", "G", "P"}
+
+	// var matrix [3][3]int = [3][3]int{
+	// 	{1, 2, 3},
+	// 	{4, 5, 6},
+	// 	{7, 8, 9},
+	// }
+
+
 	var arr [5]int
 	fmt.Println(arr)
 

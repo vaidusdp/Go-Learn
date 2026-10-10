@@ -15,12 +15,11 @@ func main() {
 	fmt.Println(sum)
 
 	greet := func() {
-				fmt.Println("Anonymus")
-			}
-
-	greet()
-		
+		fmt.Println("Anonymus")
 	}
+
+	greet()	
+}
 
 
 func add(a, b int) int {

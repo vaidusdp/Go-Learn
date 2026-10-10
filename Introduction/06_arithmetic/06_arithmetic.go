@@ -28,13 +28,14 @@ func main() {
 	fmt.Println(p);
 
 
-	// SignedInt
+	// SignedInt -> -ve min to +ve max
 	var maxInt int64 = 9223372036854775807
 	fmt.Println(maxInt)
 	fmt.Println(maxInt + 1)
 
-	// Unsigned Int
+	// Unsigned Int -> Reapeats 0 to max again
 	var umaxInt uint64 = 18446744073709551615
 	fmt.Println(umaxInt)
 	fmt.Println(umaxInt + 1)
+	fmt.Println(umaxInt + 2)
 }

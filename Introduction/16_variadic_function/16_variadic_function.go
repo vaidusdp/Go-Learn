@@ -3,6 +3,7 @@ package main
 import "fmt"
 
 func main() {
+	//Variadic Func. -> can take many params 
 	// func name(p1 t1, p2 t2, p3 ...t3){
 	// 	//code
 	// }

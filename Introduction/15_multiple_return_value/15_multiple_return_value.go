@@ -21,6 +21,7 @@ func main() {
 	fmt.Printf("Comparison: %v\nError: %v\n", c, e)
 }
 
+// During named return the value named is returned automatically as its intelligent enough to understand empty return
 func divide(a int, b int) (q int, r int) {
 	q = a / b
 	r = a % b

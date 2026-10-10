@@ -11,7 +11,7 @@ func process(i int) {
 	defer fmt.Println("1st Defer Gets Executed") //Last
 	defer fmt.Println("2nd Defer Gets Executed") //First
 	//Evaluated in the beggining only
-	//LIFO
+	//LIFO -> Stored in a stack
 	i++;
 	fmt.Println("Normal Execution")
 	fmt.Println(i)

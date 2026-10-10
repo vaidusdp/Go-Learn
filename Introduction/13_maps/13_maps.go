@@ -7,13 +7,12 @@ import (
 
 func main() {
 
-	// var mapVariable m map[keyType]value
-	// mapVariable = make(map[keyType]valueType)
-
-	// mapVariable = map[keyType]valueType{
-	// 	key1: value1,
-	// 	key2: value2
-	// }
+	// 1. var mapVariable m map[keyType]value
+	// 2. mapVariable := make(map[keyType]valueType)
+	// 3. mapVariable := map[keyType]valueType{
+		// 	key1: value1,
+		// 	key2: value2
+		// }
 
 	myMap := make(map[string]int)
 
@@ -29,10 +28,10 @@ func main() {
 	// If we write wrong key it will return default value 
 	// fmt.Println(myMap["C"])
 
-	// delete(myMap, "A")
+	// delete(myMap, "A") =>  deletes only key value
 	// fmt.Println(myMap)
 
-	// clear(myMap)
+	// clear(myMap) => delets completly
 	// fmt.Println(myMap)
  
 	value, ok := myMap["A"]
@@ -44,7 +43,7 @@ func main() {
 	}
 
 	if maps.Equal(myMap, myMap2){
-		//code
+		fmt.Println("Same h!")
 	}
 
 	fmt.Println(myMap2)
@@ -53,4 +52,5 @@ func main() {
 	}
 
 	// Nil map -> Make it first then add values
+	// First make(map[String]int)
 }
