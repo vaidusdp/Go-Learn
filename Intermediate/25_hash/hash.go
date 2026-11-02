@@ -40,7 +40,7 @@ func main() {
 
 func genSalt() ([]byte, error){
 	salt := make([]byte, 16)
-	_, err :=io.ReadFull(rand.Reader, salt)
+	_, err := io.ReadFull(rand.Reader, salt)
 	if err != nil{
 		return nil, err
 	}
