@@ -49,5 +49,4 @@ func main() {
 	fmt.Println(strings.SplitN(str, "=", 3))
 	fmt.Println(strings.SplitN(str, "=", 4))
 	fmt.Println(strings.SplitN(str, "=", 5))
-
 }

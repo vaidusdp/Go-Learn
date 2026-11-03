@@ -1,0 +1,5 @@
+INFO: 2026/11/03 10:33:55 log.go:31: This is a debug message
+Debug: 2026/11/03 10:34:31 log.go:31: This is a debug message
+Debug: 2026/11/03 12:15:09 log.go:31: This is a debug message
+Warn: 2026/11/03 12:15:09 log.go:38: WARN MSG
+Debug: 2026/11/03 12:15:09 log.go:40: Debug Msg
