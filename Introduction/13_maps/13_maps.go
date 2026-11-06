@@ -7,7 +7,7 @@ import (
 
 func main() {
 
-	// 1. var mapVariable m map[keyType]value
+	// 1. var mapVariable-m map[keyType]value
 	// 2. mapVariable := make(map[keyType]valueType)
 	// 3. mapVariable := map[keyType]valueType{
 		// 	key1: value1,

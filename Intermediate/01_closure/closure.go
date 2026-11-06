@@ -14,7 +14,7 @@ func main() {
 	fmt.Println(sequence())
 
 	// Here subtractor is the function decrements
-	subtractor := func () func(int) int {
+	subtractor := func() func(int) int {
 		res := 99
 
 		return func(x int) int {

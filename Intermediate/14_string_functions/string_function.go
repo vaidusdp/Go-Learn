@@ -15,7 +15,7 @@ func main() {
 	fmt.Println(str + " " + "World!")
 
 	fmt.Println(str[0]) //Returns ASCII Values
-	fmt.Printf("%c\n",str[0]) //Returns ASCII Values
+	fmt.Printf("%c\n",str[0]) //Returns Char
 	fmt.Println(str[0:3])
 
 
@@ -28,7 +28,7 @@ func main() {
 	fmt.Println(parts)
 
 	countries := []string{"Germany", "India"}
-	joined := strings.Join(countries, " ")
+	joined := strings.Join(countries, "-")
 	fmt.Println(joined)
 
 	fmt.Println(strings.Contains(str, "Go"))

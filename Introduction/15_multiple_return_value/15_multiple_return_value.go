@@ -35,6 +35,6 @@ func compare(a, b int) (string, error){
 	} else if b > a {
 		return "b > a", nil
 	} else {
-		return "", errors.New("Unable to compare which is greater")
+		return "Equal", errors.New("Unable to compare which is greater")
 	}
 }
