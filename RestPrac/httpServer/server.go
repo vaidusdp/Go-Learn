@@ -2,23 +2,21 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"os"
 )
 
 func main() {
 
 	http.HandleFunc("/", func(resp http.ResponseWriter, req *http.Request) {
-		fmt.Fprintln(resp, "Hello Server")
+		fmt.Fprintln(resp, "Hello Server!")
 	})
 
-	const port string = ":3000"
+	const port string = ":8080"
 
-	fmt.Println("Started Server")
+	fmt.Println("Server Listening on port:", port)
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
-		os.Exit(1)
+		log.Fatalln("error starting server", err)
 	}
-
-	
 }
