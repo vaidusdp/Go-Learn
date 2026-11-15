@@ -5,56 +5,113 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 )
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	// fmt.Fprintf(w, "Hello Root Func")
+	w.Write([]byte("Hello Root Route"))
+	fmt.Println(r.Method)
+
+	// x-www-form-urlencoded
+	// err := r.ParseForm()
+	// if err != nil {
+	// 	http.Error(w, "Error Parsing Form", http.StatusBadRequest)
+	// 	return
+	// }
+
+	// fmt.Println("Form:", r.Form)
+
+	// response := make(map[string]interface{})
+	// for key, value := range r.Form {
+	// 	response[key] = value[0]
+	// }
+	// fmt.Println("Sadda Response:", response)
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		return
+	}
+	defer r.Body.Close()
+
+	fmt.Println(string(body))
+}
+
+func teachersHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+		// Path Params
+		// teachers/id
+		fmt.Println(r.URL.Path)
+		path := strings.TrimPrefix(r.URL.Path, "/teachers/")
+		userID := strings.TrimSuffix(path, "/")
+
+		fmt.Println("Id is", userID)
+
+		// Query Params
+		// teachers/?key=value&k=v
+		fmt.Println("QueryParams:", r.URL.Query())
+		queryParams := r.URL.Query()
+		key := queryParams.Get("key") 
+		k := queryParams.Get("k") 
+		if k == "" {
+			k = "v"
+		}
+
+		fmt.Println(key, k)
+	case http.MethodPost:
+		
+	case http.MethodPut:
+
+	case http.MethodPatch:
+
+	case http.MethodDelete:
+
+	}
+}
+
+func studentsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+
+	case http.MethodPost:
+
+	case http.MethodPut:
+
+	case http.MethodPatch:
+
+	case http.MethodDelete:
+
+	}
+}
+
+func execsHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case http.MethodGet:
+
+	case http.MethodPost:
+
+	case http.MethodPut:
+
+	case http.MethodPatch:
+
+	case http.MethodDelete:
+
+	}
+}
 
 func main() {
 	port := ":3000"
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request){
-		// fmt.Fprintf(w, "Hello Root Func")
-		w.Write([]byte("Hello Root Route"))
-		fmt.Println(r.Method)
+	http.HandleFunc("/", rootHandler)
 
-		// x-www-form-urlencoded
-		// err := r.ParseForm()
-		// if err != nil {
-		// 	http.Error(w, "Error Parsing Form", http.StatusBadRequest)
-		// 	return
-		// }
+	http.HandleFunc("/teachers/", teachersHandler)
 
-		// fmt.Println("Form:", r.Form)
+	http.HandleFunc("/students/", studentsHandler)
 
-		// response := make(map[string]interface{})
-		// for key, value := range r.Form {
-		// 	response[key] = value[0]
-		// }
-		// fmt.Println("Sadda Response:", response)
+	http.HandleFunc("/execs/", execsHandler)
 
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			return
-		}
-		defer r.Body.Close()
-		
-		fmt.Println(string(body))
-	})
-
-	http.HandleFunc("/teacher", func(w http.ResponseWriter, r *http.Request){
-		// fmt.Fprintf(w, "Hello Root Func")
-		w.Write([]byte("Hello Teachers Route"))
-	})
-
-	http.HandleFunc("/student", func(w http.ResponseWriter, r *http.Request){
-		// fmt.Fprintf(w, "Hello Root Func")
-		w.Write([]byte("Hello Students Route"))
-	})
-
-	http.HandleFunc("/exec", func(w http.ResponseWriter, r *http.Request){
-		// fmt.Fprintf(w, "Hello Root Func")
-		w.Write([]byte("Hello Execs Route"))
-	})
-
-	fmt.Println("Server is running on port:", port)
+	fmt.Println("Server is running on port", port)
 	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		log.Fatalln("Error starting the server:", err)
