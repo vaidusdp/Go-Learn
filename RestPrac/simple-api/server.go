@@ -23,12 +23,12 @@ func loadClientCAs() *x509.CertPool {
 }
 
 func main() {
-	http.HandleFunc("/orders", func(w http.ResponseWriter,r *http.Request) {
+	http.HandleFunc("/orders", func(w http.ResponseWriter, r *http.Request) {
 		logRequestDetails(r)
 		fmt.Fprintf(w, "Handleing Incoming Orders")
 	})
 
-	http.HandleFunc("/users", func(w http.ResponseWriter,r *http.Request) {
+	http.HandleFunc("/users", func(w http.ResponseWriter, r *http.Request) {
 		logRequestDetails(r)
 		fmt.Fprintf(w, "Handleing Users")
 	})
@@ -40,15 +40,15 @@ func main() {
 
 	tlsConfig := &tls.Config{
 		MinVersion: tls.VersionTLS12,
-		// enforcing mTLS
-		ClientAuth: tls.RequireAndVerifyClientCert,
-		ClientCAs: loadClientCAs(),
+		ClientAuth: tls.RequireAndVerifyClientCert, // enforcing mTLS
+		ClientCAs:  loadClientCAs(),
 	}
 
 	server := &http.Server{
-		Addr: fmt.Sprintf(":%d", port),
-		Handler: nil,
+		Addr:      fmt.Sprintf(":%d", port),
+		Handler:   nil,
 		TLSConfig: tlsConfig,
+		// TLSNextProto: make(map[string]func(*http.Server, *tls.Conn, http.Handler)),
 	}
 
 	http2.ConfigureServer(server, &http2.Server{})
@@ -84,9 +84,9 @@ func getTLSVersionName(version uint16) string {
 	case tls.VersionTLS10:
 		return "TLS: 1.0"
 	case tls.VersionTLS12:
-		return "TLS: 2.0"
+		return "TLS: 1.2"
 	case tls.VersionTLS13:
-		return "TLS: 3.0"
+		return "TLS: 1.3"
 	default:
 		return "Unknown TLS Version"
 	}
