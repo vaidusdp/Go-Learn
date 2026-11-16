@@ -1,11 +1,14 @@
 package main
 
 import (
+	"crypto/tls"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"strings"
+
+	"restapi/internal/api/middlewares"
 )
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
@@ -52,15 +55,15 @@ func teachersHandler(w http.ResponseWriter, r *http.Request) {
 		// teachers/?key=value&k=v
 		fmt.Println("QueryParams:", r.URL.Query())
 		queryParams := r.URL.Query()
-		key := queryParams.Get("key") 
-		k := queryParams.Get("k") 
+		key := queryParams.Get("key")
+		k := queryParams.Get("k")
 		if k == "" {
 			k = "v"
 		}
 
 		fmt.Println(key, k)
 	case http.MethodPost:
-		
+
 	case http.MethodPut:
 
 	case http.MethodPatch:
@@ -103,16 +106,31 @@ func execsHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	port := ":3000"
 
-	http.HandleFunc("/", rootHandler)
+	cert := "cert.pem"
+	key := "key.pem"
 
-	http.HandleFunc("/teachers/", teachersHandler)
+	mux := http.NewServeMux()
 
-	http.HandleFunc("/students/", studentsHandler)
+	mux.HandleFunc("/", rootHandler)
 
-	http.HandleFunc("/execs/", execsHandler)
+	mux.HandleFunc("/teachers/", teachersHandler)
+
+	mux.HandleFunc("/students/", studentsHandler)
+
+	mux.HandleFunc("/execs/", execsHandler)
+
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+	}
+
+	server := &http.Server{
+		Addr:      port,
+		Handler:   middlewares.SecurityHeaders(mux),
+		TLSConfig: tlsConfig,
+	}
 
 	fmt.Println("Server is running on port", port)
-	err := http.ListenAndServe(port, nil)
+	err := server.ListenAndServeTLS(cert, key)
 	if err != nil {
 		log.Fatalln("Error starting the server:", err)
 	}
