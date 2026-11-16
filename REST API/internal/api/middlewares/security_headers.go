@@ -55,16 +55,16 @@ func SecurityHeaders(next http.Handler) http.Handler {
 		// Enable only if your application needs cross-origin isolation.
 		w.Header().Set("Cross-Origin-Embedder-Policy", "require-corp")
 
-		// CORS: Specifies which request headers browsers may send.
-		// Configure according to your API requirements.
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		// // CORS: Specifies which request headers browsers may send.
+		// // Configure according to your API requirements.
+		// w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
-		// CORS: Specifies which HTTP methods browsers may use.
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
+		// // CORS: Specifies which HTTP methods browsers may use.
+		// w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE")
 
-		// CORS: Allows credentialed cross-origin requests.
-		// Requires an explicit trusted origin in Access-Control-Allow-Origin.
-		w.Header().Set("Access-Control-Allow-Credentials", "true")
+		// // CORS: Allows credentialed cross-origin requests.
+		// // Requires an explicit trusted origin in Access-Control-Allow-Origin.
+		// w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		// Restricts browser features such as geolocation and microphone.
 		w.Header().Set("Permissions-Policy", "geolocation=(self), microphone=()")
