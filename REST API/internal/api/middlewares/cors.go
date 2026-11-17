@@ -39,7 +39,7 @@ func Cors(next http.Handler) http.Handler {
 }
 
 func isOriginAllowed(origin string) bool {
-	for  _, allowedOrigin := range allowedOrigins {
+	for _, allowedOrigin := range allowedOrigins {
 		if origin == allowedOrigin {
 			return true
 		}

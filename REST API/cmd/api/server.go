@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	mw "restapi/internal/api/middlewares"
 )
@@ -93,7 +94,15 @@ func execsHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodGet:
 
 	case http.MethodPost:
+		fmt.Println("Query:", r.URL.Query())
+		fmt.Println("Name:", r.URL.Query().Get("name"))
+		fmt.Println("Name:", r.URL.Query().Get("name"))
 
+		err := r.ParseForm()
+		if err != nil {
+			return
+		}
+		fmt.Println("Form:", r.Form)
 	case http.MethodPut:
 
 	case http.MethodPatch:
@@ -123,9 +132,19 @@ func main() {
 		MinVersion: tls.VersionTLS12,
 	}
 
+	rl := mw.NewRateLimiter(5, time.Minute)
+	hppOptions := mw.HPPOptions{
+		CheckQuery:                  true,
+		CheckBody:                   true,
+		CheckBodyOnlyForContentType: "application/x-www-form-urlencoded",
+		Whitelist:                   []string{"sortBy", "sortOrder", "name", "age", "class"},
+	}
+
+	secureMux := mw.Hpp(hppOptions)(rl.Middleware(mw.Compression(mw.ResoponseTimeMiddleware(mw.SecurityHeaders(mw.Cors(mux))))))
+
 	server := &http.Server{
-		Addr:      port,
-		Handler:   mw.SecurityHeaders(mw.Cors(mux)),
+		Addr:    port,
+		Handler: secureMux,
 		// Handler:   middlewares.Cors(mux),
 		TLSConfig: tlsConfig,
 	}
