@@ -7,7 +7,10 @@ import (
 )
 
 func ResoponseTimeMiddleware(next http.Handler) http.Handler {
+	fmt.Println("Response Time Middleware")
+
 	return http.HandlerFunc(func (w http.ResponseWriter, r *http.Request){
+		fmt.Println("Response Time Middleware Returning...")
 		start := time.Now()
 
 		wrappedWriter := &responseWriter{ResponseWriter: w, status: http.StatusOK}
@@ -18,7 +21,7 @@ func ResoponseTimeMiddleware(next http.Handler) http.Handler {
 		wrappedWriter.Header().Set("X-Response-Time", duration.String())
 
 		fmt.Printf("Method: %s URL: %s, Status: %v, Duration: %v\n", r.Method, r.URL, wrappedWriter.status, duration.String())
-		fmt.Println("Sent Response from Response Writer")
+		fmt.Println("Response Time Limiter Done")
 	})
 }
 

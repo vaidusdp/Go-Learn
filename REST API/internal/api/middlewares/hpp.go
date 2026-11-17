@@ -14,8 +14,10 @@ type HPPOptions struct {
 }
 
 func Hpp(options HPPOptions) func(http.Handler) http.Handler {
+	fmt.Println("Hpp Middleware")
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println("Hpp Middleware Returning...")
 			if options.CheckQuery && r.URL.Query() != nil{
 				filterQueryParams(r, options.Whitelist)
 			}
@@ -25,6 +27,7 @@ func Hpp(options HPPOptions) func(http.Handler) http.Handler {
 			}
 
 			next.ServeHTTP(w, r)
+			fmt.Println("Hpp Middleware Done")
 		})
 	}
 }

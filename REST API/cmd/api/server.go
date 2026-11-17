@@ -96,7 +96,6 @@ func execsHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPost:
 		fmt.Println("Query:", r.URL.Query())
 		fmt.Println("Name:", r.URL.Query().Get("name"))
-		fmt.Println("Name:", r.URL.Query().Get("name"))
 
 		err := r.ParseForm()
 		if err != nil {
@@ -140,7 +139,7 @@ func main() {
 		Whitelist:                   []string{"sortBy", "sortOrder", "name", "age", "class"},
 	}
 
-	secureMux := mw.Hpp(hppOptions)(rl.Middleware(mw.Compression(mw.ResoponseTimeMiddleware(mw.SecurityHeaders(mw.Cors(mux))))))
+	secureMux := mw.Cors(rl.Middleware(mw.ResoponseTimeMiddleware(mw.SecurityHeaders(mw.Compression(mw.Hpp(hppOptions)(mux))))))
 
 	server := &http.Server{
 		Addr:    port,
