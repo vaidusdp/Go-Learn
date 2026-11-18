@@ -2,15 +2,101 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
-	"time"
+	"sync"
+
+	// "time"
 
 	mw "restapi/internal/api/middlewares"
 )
+
+type Teacher struct {
+	ID        int
+	FirstName string
+	LastName  string
+	Subject   string
+	Class     string
+}
+
+var (
+	teachers = make(map[int]Teacher)
+	mutex    = &sync.Mutex{}
+	nextId   = 1
+)
+
+func init() {
+	teachers[nextId] = Teacher{
+		nextId,
+		"Jhon",
+		"Doe",
+		"CN",
+		"2-A",
+	}
+
+	nextId++
+	teachers[nextId] = Teacher{
+		nextId,
+		"Jane",
+		"Smith",
+		"Spring",
+		"1-A",
+	}
+
+	nextId++
+	teachers[nextId] = Teacher{
+		nextId,
+		"Jane",
+		"Doe",
+		"Spring",
+		"1-A",
+	}
+}
+
+func getTeachersHandler(w http.ResponseWriter, r *http.Request) {
+	path := strings.TrimPrefix(r.URL.Path, "/teachers/")
+	idStr := strings.TrimSuffix(path, "/")
+
+	if idStr == "" {
+		firstName := r.URL.Query().Get("first_name")
+		lastName := r.URL.Query().Get("last_name")
+		teacherList := make([]Teacher, 0, len(teachers))
+		for _, teacher := range teachers {
+			if (firstName == "" || teacher.FirstName == firstName) && (lastName == "" || teacher.LastName == lastName) {
+				teacherList = append(teacherList, teacher)
+			}
+		} 
+		response := struct{
+			Status string `json:"status"`
+			Count int `json:"count"`
+			Data []Teacher `json:"data"`
+		}{
+			Status: "success",
+			Count: len(teachers),
+			Data: teacherList,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	}
+
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Fatalln("Unable to convert:", err)
+	}
+
+	teacher, exists := teachers[id]
+	if !exists {
+		http.Error(w, "Teacher not found", http.StatusNotFound)
+		return
+	}
+	json.NewEncoder(w).Encode(teacher)
+}
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "Hello Root Func")
@@ -44,25 +130,7 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 func teachersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
-		// Path Params
-		// teachers/id
-		fmt.Println(r.URL.Path)
-		path := strings.TrimPrefix(r.URL.Path, "/teachers/")
-		userID := strings.TrimSuffix(path, "/")
-
-		fmt.Println("Id is", userID)
-
-		// Query Params
-		// teachers/?key=value&k=v
-		fmt.Println("QueryParams:", r.URL.Query())
-		queryParams := r.URL.Query()
-		key := queryParams.Get("key")
-		k := queryParams.Get("k")
-		if k == "" {
-			k = "v"
-		}
-
-		fmt.Println(key, k)
+		getTeachersHandler(w, r)
 	case http.MethodPost:
 
 	case http.MethodPut:
@@ -131,16 +199,17 @@ func main() {
 		MinVersion: tls.VersionTLS12,
 	}
 
-	rl := mw.NewRateLimiter(5, time.Minute)
-	hppOptions := mw.HPPOptions{
-		CheckQuery:                  true,
-		CheckBody:                   true,
-		CheckBodyOnlyForContentType: "application/x-www-form-urlencoded",
-		Whitelist:                   []string{"sortBy", "sortOrder", "name", "age", "class"},
-	}
+	// rl := mw.NewRateLimiter(5, time.Minute)
+	// hppOptions := mw.HPPOptions{
+	// 	CheckQuery:                  true,
+	// 	CheckBody:                   true,
+	// 	CheckBodyOnlyForContentType: "application/x-www-form-urlencoded",
+	// 	Whitelist:                   []string{"sortBy", "sortOrder", "name", "age", "class"},
+	// }
 
 	// secureMux := mw.Cors(rl.Middleware(mw.ResoponseTimeMiddleware(mw.SecurityHeaders(mw.Compression(mw.Hpp(hppOptions)(mux))))))
-	secureMux := applyMiddlewares(mux, mw.Hpp(hppOptions), mw.Compression, mw.SecurityHeaders, mw.SecurityHeaders, mw.ResoponseTimeMiddleware, rl.Middleware, mw.Cors)
+	// secureMux := applyMiddlewares(mux, mw.Hpp(hppOptions), mw.Compression, mw.SecurityHeaders, mw.SecurityHeaders, mw.ResoponseTimeMiddleware, rl.Middleware, mw.Cors)
+	secureMux := mw.Cors(mux)
 
 	server := &http.Server{
 		Addr:    port,
