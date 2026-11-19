@@ -2,181 +2,48 @@ package main
 
 import (
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
-	"strconv"
-	"strings"
-	"sync"
-
-	// "time"
 
 	mw "restapi/internal/api/middlewares"
+	"restapi/internal/api/router"
+	"restapi/internal/models"
 )
 
-type Teacher struct {
-	ID        int
-	FirstName string
-	LastName  string
-	Subject   string
-	Class     string
-}
-
 var (
-	teachers = make(map[int]Teacher)
-	mutex    = &sync.Mutex{}
+	teachers = make(map[int]models.Teacher)
 	nextId   = 1
 )
 
 func init() {
-	teachers[nextId] = Teacher{
-		nextId,
-		"Jhon",
-		"Doe",
-		"CN",
-		"2-A",
+	teachers[nextId] = models.Teacher{
+		ID:        nextId,
+		FirstName: "Jhon",
+		LastName:  "Doe",
+		Subject:   "CN",
+		Class:     "2-A",
 	}
 
 	nextId++
-	teachers[nextId] = Teacher{
-		nextId,
-		"Jane",
-		"Smith",
-		"Spring",
-		"1-A",
+	teachers[nextId] = models.Teacher{
+		ID:        nextId,
+		FirstName: "Jane",
+		LastName:  "Smith",
+		Subject:   "Spring",
+		Class:     "1-A",
 	}
 
 	nextId++
-	teachers[nextId] = Teacher{
-		nextId,
-		"Jane",
-		"Doe",
-		"Spring",
-		"1-A",
-	}
-}
-
-func getTeachersHandler(w http.ResponseWriter, r *http.Request) {
-	path := strings.TrimPrefix(r.URL.Path, "/teachers/")
-	idStr := strings.TrimSuffix(path, "/")
-
-	if idStr == "" {
-		firstName := r.URL.Query().Get("first_name")
-		lastName := r.URL.Query().Get("last_name")
-		teacherList := make([]Teacher, 0, len(teachers))
-		for _, teacher := range teachers {
-			if (firstName == "" || teacher.FirstName == firstName) && (lastName == "" || teacher.LastName == lastName) {
-				teacherList = append(teacherList, teacher)
-			}
-		} 
-		response := struct{
-			Status string `json:"status"`
-			Count int `json:"count"`
-			Data []Teacher `json:"data"`
-		}{
-			Status: "success",
-			Count: len(teachers),
-			Data: teacherList,
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+	teachers[nextId] = models.Teacher{
+		ID:        nextId,
+		FirstName: "Jane",
+		LastName:  "Doe",
+		Subject:   "Spring",
+		Class:     "1-A",
 	}
 
-	id, err := strconv.Atoi(idStr)
-	if err != nil {
-		log.Fatalln("Unable to convert:", err)
-	}
-
-	teacher, exists := teachers[id]
-	if !exists {
-		http.Error(w, "Teacher not found", http.StatusNotFound)
-		return
-	}
-	json.NewEncoder(w).Encode(teacher)
-}
-
-func rootHandler(w http.ResponseWriter, r *http.Request) {
-	// fmt.Fprintf(w, "Hello Root Func")
-	w.Write([]byte("Hello Root Route"))
-	fmt.Println(r.Method)
-
-	// x-www-form-urlencoded
-	// err := r.ParseForm()
-	// if err != nil {
-	// 	http.Error(w, "Error Parsing Form", http.StatusBadRequest)
-	// 	return
-	// }
-
-	// fmt.Println("Form:", r.Form)
-
-	// response := make(map[string]interface{})
-	// for key, value := range r.Form {
-	// 	response[key] = value[0]
-	// }
-	// fmt.Println("Sadda Response:", response)
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		return
-	}
-	defer r.Body.Close()
-
-	fmt.Println(string(body))
-}
-
-func teachersHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-		getTeachersHandler(w, r)
-	case http.MethodPost:
-
-	case http.MethodPut:
-
-	case http.MethodPatch:
-
-	case http.MethodDelete:
-
-	}
-}
-
-func studentsHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-
-	case http.MethodPost:
-
-	case http.MethodPut:
-
-	case http.MethodPatch:
-
-	case http.MethodDelete:
-
-	}
-}
-
-func execsHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.Method {
-	case http.MethodGet:
-
-	case http.MethodPost:
-		fmt.Println("Query:", r.URL.Query())
-		fmt.Println("Name:", r.URL.Query().Get("name"))
-
-		err := r.ParseForm()
-		if err != nil {
-			return
-		}
-		fmt.Println("Form:", r.Form)
-	case http.MethodPut:
-
-	case http.MethodPatch:
-
-	case http.MethodDelete:
-
-	}
+	nextId++
 }
 
 func main() {
@@ -184,16 +51,6 @@ func main() {
 
 	cert := "cert.pem"
 	key := "key.pem"
-
-	mux := http.NewServeMux()
-
-	mux.HandleFunc("/", rootHandler)
-
-	mux.HandleFunc("/teachers/", teachersHandler)
-
-	mux.HandleFunc("/students/", studentsHandler)
-
-	mux.HandleFunc("/execs/", execsHandler)
 
 	tlsConfig := &tls.Config{
 		MinVersion: tls.VersionTLS12,
@@ -209,7 +66,8 @@ func main() {
 
 	// secureMux := mw.Cors(rl.Middleware(mw.ResoponseTimeMiddleware(mw.SecurityHeaders(mw.Compression(mw.Hpp(hppOptions)(mux))))))
 	// secureMux := applyMiddlewares(mux, mw.Hpp(hppOptions), mw.Compression, mw.SecurityHeaders, mw.SecurityHeaders, mw.ResoponseTimeMiddleware, rl.Middleware, mw.Cors)
-	secureMux := mw.Cors(mux)
+	router := router.Router()
+	secureMux := mw.Cors(router)
 
 	server := &http.Server{
 		Addr:    port,
@@ -223,14 +81,4 @@ func main() {
 	if err != nil {
 		log.Fatalln("Error starting the server:", err)
 	}
-}
-
-type Middleware func(http.Handler) http.Handler
-
-func applyMiddlewares(handler http.Handler, middlewares ...Middleware) http.Handler {
-	for _, middleware := range middlewares {
-		handler = middleware(handler)
-	}
-
-	return handler
 }
