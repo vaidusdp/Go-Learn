@@ -9,6 +9,7 @@ import (
 	mw "restapi/internal/api/middlewares"
 	"restapi/internal/api/router"
 	"restapi/internal/models"
+	"restapi/internal/repository/sqlconnect"
 )
 
 var (
@@ -47,8 +48,13 @@ func init() {
 }
 
 func main() {
-	port := ":3000"
 
+	_, err := sqlconnect.ConnectDB("test-database")
+	if err != nil {
+		fmt.Println("Error-------", err)
+		return
+	}
+	port := ":3000"
 	cert := "cert.pem"
 	key := "key.pem"
 
@@ -77,7 +83,7 @@ func main() {
 	}
 
 	fmt.Println("Server is running on port", port)
-	err := server.ListenAndServeTLS(cert, key)
+	err = server.ListenAndServeTLS(cert, key)
 	if err != nil {
 		log.Fatalln("Error starting the server:", err)
 	}
