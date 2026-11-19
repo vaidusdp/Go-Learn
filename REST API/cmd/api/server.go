@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	mw "restapi/internal/api/middlewares"
 	"restapi/internal/api/router"
 	"restapi/internal/models"
 	"restapi/internal/repository/sqlconnect"
+
+	"github.com/joho/godotenv"
 )
 
 var (
@@ -48,13 +51,17 @@ func init() {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		return
+	}
 
-	_, err := sqlconnect.ConnectDB("test-database")
+	_, err = sqlconnect.ConnectDB()
 	if err != nil {
 		fmt.Println("Error-------", err)
 		return
 	}
-	port := ":3000"
+	port := os.Getenv("API_PORT")
 	cert := "cert.pem"
 	key := "key.pem"
 
@@ -82,7 +89,7 @@ func main() {
 		TLSConfig: tlsConfig,
 	}
 
-	fmt.Println("Server is running on port", port)
+	fmt.Printf("Server is running on port %s", port)
 	err = server.ListenAndServeTLS(cert, key)
 	if err != nil {
 		log.Fatalln("Error starting the server:", err)
