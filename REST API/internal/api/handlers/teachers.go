@@ -310,13 +310,13 @@ func PatchTeachersHandler(w http.ResponseWriter, r *http.Request) {
 				continue
 			}
 
-			for i := 0; i<teacherVal.NumField(); i++ {
+			for i := 0; i < teacherVal.NumField(); i++ {
 				field := teacherType.Field(i)
-				if field.Tag.Get("json") == k + ",omitempty"{
+				if field.Tag.Get("json") == k+",omitempty" {
 					fieldVal := teacherVal.Field(i)
 					if fieldVal.CanSet() {
 						val := reflect.ValueOf(v)
-						if val.Type().ConvertibleTo(fieldVal.Type()){
+						if val.Type().ConvertibleTo(fieldVal.Type()) {
 							fieldVal.Set(val.Convert(fieldVal.Type()))
 						} else {
 							tx.Rollback()
@@ -445,6 +445,92 @@ func DeleteTeacherHandler(w http.ResponseWriter, r *http.Request) {
 	}{
 		Status: "Teacher Successfully Deleting",
 		ID:     id,
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
+func DeleteTeachersHandler(w http.ResponseWriter, r *http.Request) {
+	db, err := sqlconnect.ConnectDB()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	var ids []int
+	err = json.NewDecoder(r.Body).Decode(&ids)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid Request Payload", http.StatusBadRequest)
+		return
+	}
+
+	tx, err := db.Begin()
+	if err != nil {
+		log.Panicln(err)
+		http.Error(w, "Error starting transaction", http.StatusInternalServerError)
+		return
+	}
+
+	stmt, err := tx.Prepare("DELETE FROM teachers WHERE id = @p1")
+	if err != nil {
+		log.Panicln(err)
+		tx.Rollback()
+		http.Error(w, "Error preparing delete statement", http.StatusInternalServerError)
+		return
+	}
+
+	var deletedIds []int
+
+	for _, id := range ids {
+		res, err := stmt.Exec(id)
+		if err != nil {
+			tx.Rollback()
+			log.Panicln(err)
+			http.Error(w, "Error deleting teacher", http.StatusInternalServerError)
+			return
+		}
+
+		rowsAffected, err := res.RowsAffected()
+		if err != nil {
+			tx.Rollback()
+			log.Panicln(err)
+			http.Error(w, "Error retrieving delete result", http.StatusInternalServerError)
+			return
+		}
+
+		if rowsAffected > 0 {
+			deletedIds = append(deletedIds, id)
+		}
+
+		if rowsAffected < 1 {
+			tx.Rollback()
+			http.Error(w, fmt.Sprintf("Id %d Does Not Exist", id), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Error commiting transaction", http.StatusInternalServerError)
+		return
+	}
+
+	if len(deletedIds) < 1 {
+		http.Error(w, "Error retrieving delete result", http.StatusBadGateway)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	response := struct {
+		Status     string `json:"status"`
+		DeletedIDs []int  `json:"deleted_ids"`
+	}{
+		Status:     "Teachers successfully deleted",
+		DeletedIDs: deletedIds,
 	}
 
 	json.NewEncoder(w).Encode(response)
