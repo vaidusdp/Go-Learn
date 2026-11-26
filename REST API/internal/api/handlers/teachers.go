@@ -255,7 +255,7 @@ func patchTeacherHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Teacher Id", http.StatusBadRequest)
 		return
 	}
-	
+
 	var updates map[string]interface{}
 	err = json.NewDecoder(r.Body).Decode(&updates)
 	if err != nil {
@@ -284,10 +284,10 @@ func patchTeacherHandler(w http.ResponseWriter, r *http.Request) {
 	teacherVal := reflect.ValueOf(&existingTeacher).Elem()
 	teacherType := teacherVal.Type()
 
-	for k,v := range updates {
+	for k, v := range updates {
 		for i := 0; i < teacherVal.NumField(); i++ {
 			feild := teacherType.Field(i)
-			
+
 			if feild.Tag.Get("json") == k+",omitempty" {
 				if teacherVal.Field(i).CanSet() {
 					teacherVal.Field(i).Set(reflect.ValueOf(v).Convert(teacherVal.Field(i).Type()))
@@ -307,6 +307,54 @@ func patchTeacherHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(existingTeacher)
 }
 
+func deleteTeacherHandler(w http.ResponseWriter, r *http.Request){
+	idStr := strings.TrimPrefix(r.URL.Path, "/teachers/")
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Invalid Teacher Id", http.StatusBadRequest)
+		return
+	}
+
+
+	db, err := sqlconnect.ConnectDB()
+	if err != nil {
+		log.Println(err)
+		http.Error(w, "Unable to connect to database", http.StatusInternalServerError)
+		return
+	}
+	defer db.Close()
+
+	res,err := db.Exec("DELETE FROM teachers WHERE id = @p1", id)
+	if err != nil {
+		http.Error(w, "Error Deleting Teacher", http.StatusInternalServerError)
+		return
+	}
+
+	rowsAffected, err := res.RowsAffected()
+	if err != nil {
+		http.Error(w, "Error Retrieving Rows Teacher", http.StatusInternalServerError)
+		return
+	}
+
+	if rowsAffected == 0 {
+		http.Error(w, "Teacher not found", http.StatusNotFound)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	response := struct {
+		Status string `json:"status"`
+		ID int `json:"id"`
+	}{
+		Status: "Teacher Successfully Deleting",
+		ID: id,
+	}
+
+	json.NewEncoder(w).Encode(response)
+}
+
 func TeachersHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
@@ -318,6 +366,6 @@ func TeachersHandler(w http.ResponseWriter, r *http.Request) {
 	case http.MethodPatch:
 		patchTeacherHandler(w, r)
 	case http.MethodDelete:
-
+		deleteTeacherHandler(w, r)
 	}
 }
