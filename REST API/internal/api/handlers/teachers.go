@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 	"restapi/internal/models"
@@ -15,6 +14,7 @@ func GetTeachersHandler(w http.ResponseWriter, r *http.Request) {
 	var teachers []models.Teacher
 	teachers, err := sqlconnect.GetTeachersDbHandler(teachers, r)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -44,7 +44,7 @@ func GetOneTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	teacher, err := sqlconnect.GetOneTeacherDbHandler(id)
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -63,6 +63,7 @@ func AddTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	addedTeachers, err := sqlconnect.AddTeacherDbHandler(newTeachers)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -101,7 +102,7 @@ func UpdateTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	updatedTeacher, err = sqlconnect.UpdateTeacherDbHandler(id, updatedTeacher)
 	if err != nil {
-		fmt.Println(nil)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -115,11 +116,12 @@ func PatchTeachersHandler(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&updates)
 	if err != nil {
 		http.Error(w, "Invalid Request Payload", http.StatusBadRequest)
+		return
 	}
 
 	err = sqlconnect.PatchTeacherDbHandler(updates)
 	if err != nil {
-		log.Panicln(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -144,7 +146,7 @@ func PatchOneTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	updatedTeacher, err := sqlconnect.PatchOneTeacherDbHandler(id, updates)
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -163,6 +165,7 @@ func DeleteTeacherHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = sqlconnect.DeleteOneTeacherDbHandler(id)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -191,7 +194,7 @@ func DeleteTeachersHandler(w http.ResponseWriter, r *http.Request) {
 
 	deletedIds, err := sqlconnect.DeleteTeachersDbHandler(ids)
 	if err != nil {
-		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
