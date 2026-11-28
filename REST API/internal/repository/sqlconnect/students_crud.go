@@ -18,7 +18,7 @@ func GetStudentsDbHandler(students []models.Student, r *http.Request) ([]models.
 	}
 	defer db.Close()
 
-	query := "SELECT id, FirstName, LastName, email, class, subject FROM students WHERE 1=1"
+	query := "SELECT id, FirstName, LastName, email, class, teacher_id FROM students WHERE 1=1"
 	var args []interface{}
 
 	query, args = utils.QueryFilter(r, query, args)
@@ -34,7 +34,7 @@ func GetStudentsDbHandler(students []models.Student, r *http.Request) ([]models.
 
 	for rows.Next() {
 		var student models.Student
-		err = rows.Scan(&student.ID, &student.FirstName, &student.LastName, &student.Email, &student.Class)
+		err = rows.Scan(&student.ID, &student.FirstName, &student.LastName, &student.Email, &student.Class, &student.TeacherID)
 		if err != nil {
 			return nil, utils.ErrorHandler(err, "Error scanning database results")
 		}
@@ -51,7 +51,7 @@ func GetOneStudentDbHandler(id int) (models.Student, error) {
 	defer db.Close()
 
 	var student models.Student
-	err = db.QueryRow("SELECT id, FirstName, LastName, email, class, subject FROM students WHERE id = @p1", id).Scan(&student.ID, &student.FirstName, &student.LastName, &student.Email, &student.Class)
+	err = db.QueryRow("SELECT id, FirstName, LastName, email, class, teacher_id FROM students WHERE id = @p1", id).Scan(&student.ID, &student.FirstName, &student.LastName, &student.Email, &student.Class, &student.TeacherID)
 	if err == sql.ErrNoRows {
 		return models.Student{}, utils.ErrorHandler(err, "Student not found")
 	} else if err != nil {
@@ -105,7 +105,7 @@ func UpdateStudentDbHandler(id int, updatedStudent models.Student) (models.Stude
 	defer db.Close()
 
 	var existingStudent models.Student
-	err = db.QueryRow("SELECT id, FirstName, LastName, email, class, subject FROM students WHERE id = @p1", id).Scan(&existingStudent.ID, &existingStudent.FirstName, &existingStudent.LastName, &existingStudent.Email, &existingStudent.Class)
+	err = db.QueryRow("SELECT id, FirstName, LastName, email, class, teacher_id FROM students WHERE id = @p1", id).Scan(&existingStudent.ID, &existingStudent.FirstName, &existingStudent.LastName, &existingStudent.Email, &existingStudent.Class, &existingStudent.TeacherID)
 	if err == sql.ErrNoRows {
 		return models.Student{}, utils.ErrorHandler(err, "Student Not Found")
 	} else if err != nil {
@@ -113,7 +113,7 @@ func UpdateStudentDbHandler(id int, updatedStudent models.Student) (models.Stude
 	}
 
 	updatedStudent.ID = existingStudent.ID
-	_, err = db.Exec("UPDATE students SET FirstName = @p1, LastName = @p2, email = @p3, class = @p4 WHERE id = @p5", updatedStudent.FirstName, updatedStudent.LastName, updatedStudent.Email, updatedStudent.Class, updatedStudent.ID)
+	_, err = db.Exec("UPDATE students SET FirstName = @p1, LastName = @p2, email = @p3, class = @p4, teacher_id = @p5 WHERE id = @p6", updatedStudent.FirstName, updatedStudent.LastName, updatedStudent.Email, updatedStudent.Class, updatedStudent.TeacherID, updatedStudent.ID)
 	if err != nil {
 		log.Println(err)
 		return models.Student{}, err
@@ -148,7 +148,7 @@ func PatchStudentDbHandler(updates []map[string]interface{}) error {
 		}
 
 		var studentFromDb models.Student
-		err = db.QueryRow("SELECT id, FirstName, LastName, email, class FROM students WHERE id = @p1", id).Scan(&studentFromDb.ID, &studentFromDb.FirstName, &studentFromDb.LastName, &studentFromDb.Email, &studentFromDb.Class)
+		err = db.QueryRow("SELECT id, FirstName, LastName, email, class, teacher_id FROM students WHERE id = @p1", id).Scan(&studentFromDb.ID, &studentFromDb.FirstName, &studentFromDb.LastName, &studentFromDb.Email, &studentFromDb.Class, &studentFromDb.TeacherID)
 		if err != nil {
 			tx.Rollback()
 			if err != sql.ErrNoRows {
@@ -182,7 +182,7 @@ func PatchStudentDbHandler(updates []map[string]interface{}) error {
 				}
 			}
 		}
-		_, err = tx.Exec("UPDATE students SET FirstName = @p1, LastName = @p2, email = @p3, class = @p4 WHERE id = @p5", studentFromDb.FirstName, studentFromDb.LastName, studentFromDb.Email, studentFromDb.Class, studentFromDb.ID)
+		_, err = tx.Exec("UPDATE students SET FirstName = @p1, LastName = @p2, email = @p3, class = @p4, teacher_id = @p5 WHERE id = @p6", studentFromDb.FirstName, studentFromDb.LastName, studentFromDb.Email, studentFromDb.Class, studentFromDb.TeacherID, studentFromDb.ID)
 
 		if err != nil {
 			tx.Rollback()
@@ -206,7 +206,7 @@ func PatchOneStudentDbHandler(id int, updates map[string]interface{}) (models.St
 	defer db.Close()
 
 	var existingStudent models.Student
-	err = db.QueryRow("SELECT id, FirstName, LastName, email, class FROM students WHERE id = @p1", id).Scan(&existingStudent.ID, &existingStudent.FirstName, &existingStudent.LastName, &existingStudent.Email, &existingStudent.Class)
+	err = db.QueryRow("SELECT id, FirstName, LastName, email, class, teacher_id FROM students WHERE id = @p1", id).Scan(&existingStudent.ID, &existingStudent.FirstName, &existingStudent.LastName, &existingStudent.Email, &existingStudent.Class, &existingStudent.TeacherID)
 	if err == sql.ErrNoRows {
 		return models.Student{}, utils.ErrorHandler(err, "Student Not Found")
 	} else if err != nil {
@@ -277,6 +277,7 @@ func DeleteStudentsDbHandler(ids []int) ([]int, error) {
 		tx.Rollback()
 		return nil, utils.ErrorHandler(err, "Error preparing delete statement")
 	}
+	defer stmt.Close()
 
 	var deletedIds []int
 
@@ -284,14 +285,14 @@ func DeleteStudentsDbHandler(ids []int) ([]int, error) {
 		res, err := stmt.Exec(id)
 		if err != nil {
 			tx.Rollback()
-			log.Panicln(err)
+			log.Println(err)
 			return nil, utils.ErrorHandler(err, "Error deleting student")
 		}
 
 		rowsAffected, err := res.RowsAffected()
 		if err != nil {
 			tx.Rollback()
-			log.Panicln(err)
+			log.Println(err)
 			return nil, utils.ErrorHandler(err, "Error retrieving delete result")
 		}
 
