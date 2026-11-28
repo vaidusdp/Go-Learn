@@ -79,7 +79,7 @@ func main() {
 
 	// secureMux := mw.Cors(rl.Middleware(mw.ResoponseTimeMiddleware(mw.SecurityHeaders(mw.Compression(mw.Hpp(hppOptions)(mux))))))
 	// secureMux := applyMiddlewares(mux, mw.Hpp(hppOptions), mw.Compression, mw.SecurityHeaders, mw.SecurityHeaders, mw.ResoponseTimeMiddleware, rl.Middleware, mw.Cors)
-	router := router.Router()
+	router := router.MainRouter()
 	secureMux := mw.Cors(router)
 
 	server := &http.Server{

@@ -250,3 +250,51 @@ func DeleteTeachersHandler(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(response)
 }
+
+func GetStudentsByTeacherId(w http.ResponseWriter, r *http.Request) {
+	teacherId := r.PathValue("id")
+
+	var students []models.Student
+
+	db, err := sqlconnect.ConnectDB()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	query := `SELECT id, FirstName, LastName, email, class FROM students WHERE teacher_id = @p1`
+	rows, err := db.Query(query, teacherId)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	for rows.Next() {
+		var student models.Student
+		rows.Scan(&student.ID, &student.FirstName, &student.LastName, &student.Email, &student.Class)
+		if err != nil {
+			log.Println(err)
+			return
+		}
+		students = append(students, student)
+	}
+
+	err = rows.Err()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	response := struct {
+		Status string `json:"status"`
+		Count int `json:"count"`
+		Data []models.Student `json:"data"`
+	} {
+		Status: "success",
+		Count: len(students),
+		Data: students,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
+}
