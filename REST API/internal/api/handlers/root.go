@@ -8,7 +8,7 @@ import (
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
 	// fmt.Fprintf(w, "Hello Root Func")
-	w.Write([]byte("Hello Root Route"))
+	w.Write([]byte("Welcome To School API"))
 	fmt.Println(r.Method)
 
 	// x-www-form-urlencoded
